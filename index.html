@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mengenal Bagian dan Jenis Pura - Kelas 4 SD</title>
+    <!-- Menggunakan Tailwind CSS untuk tata letak responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Menggunakan Font Fredoka & Nunito yang bulat dan ramah anak -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Tone.js untuk efek suara sintetis tanpa file eksternal -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 50%, #FCD34D 100%);
+            min-height: 100vh;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        h1, h2, h3, .font-judul {
+            font-family: 'Fredoka', sans-serif;
+        }
+        /* Animasi tombol 3D ceria */
+        .btn-3d {
+            transition: all 0.15s ease;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+        }
+        .btn-3d:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+        }
+        /* Efek kartu terpilih */
+        .card-selected {
+            border-color: #2563EB !important;
+            background-color: #DBEAFE !important;
+            transform: scale(1.03);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3);
+        }
+        /* Efek kartu benar */
+        .card-matched {
+            border-color: #16A34A !important;
+            background-color: #DCFCE7 !important;
+            opacity: 0.85;
+            pointer-events: none;
+        }
+        /* Animasi getar saat jawaban salah */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-8px); }
+        }
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        /* Animasi memantul halus */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-between p-3 sm:p-6 text-slate-800">
+
+    <!-- Header Status Permainan (Muncul saat bermain) -->
+    <header id="game-header" class="hidden w-full max-w-4xl bg-white/95 backdrop-blur rounded-3xl p-3 sm:p-4 shadow-lg border-4 border-amber-400 mb-4 flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2 sm:gap-3">
+            <span class="text-2xl sm:text-3xl">🛕</span>
+            <div>
+                <p class="text-xs sm:text-sm font-bold text-amber-700 uppercase tracking-wider" id="header-stage">Babak 1</p>
+                <p class="font-judul text-base sm:text-xl font-bold text-slate-800" id="player-display">Siswa Hebat</p>
+            </div>
+        </div>
+
+        <!-- Indikator Nyawa & Skor -->
+        <div class="flex items-center gap-3 sm:gap-6">
+            <div class="bg-rose-50 px-3 sm:px-4 py-1.5 rounded-2xl border-2 border-rose-200 flex items-center gap-1" title="Nyawa Tersisa">
+                <span id="hearts-container" class="text-xl sm:text-2xl tracking-widest">❤️❤️❤️</span>
+            </div>
+            <div class="bg-amber-50 px-3 sm:px-4 py-1.5 rounded-2xl border-2 border-amber-300 flex items-center gap-2">
+                <span class="text-xl sm:text-2xl">⭐</span>
+                <span id="score-display" class="font-judul text-xl sm:text-2xl font-bold text-amber-600">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Kontainer Utama -->
+    <main class="w-full max-w-4xl flex-grow flex items-center justify-center">
+
+        <!-- LAYAR 1: HALAMAN PEMBUKA -->
+        <section id="screen-start" class="w-full bg-white rounded-3xl p-6 sm:p-10 shadow-xl border-4 border-amber-400 text-center">
+            <div class="text-6xl sm:text-7xl mb-4 animate-float">🛕🌺🙏</div>
+            <span class="inline-block bg-amber-100 text-amber-800 font-bold px-4 py-1 rounded-full text-sm sm:text-base mb-3 border border-amber-300">
+                Pendidikan Agama Hindu • Kelas 4 SD (Fase B)
+            </span>
+            <h1 class="text-3xl sm:text-5xl font-bold text-amber-700 mb-4 leading-tight">
+                Mengenal Bagian & Jenis Pura
+            </h1>
+            <p class="text-base sm:text-xl text-slate-600 max-w-2xl mx-auto mb-6 leading-relaxed">
+                Ayo bertualang mengenal bagian-bagian suci pada Pura (Tri Mandala) dan berbagai jenis Pura di sekitar kita!
+            </p>
+
+            <!-- Input Nama Siswa -->
+            <div class="max-w-md mx-auto mb-6">
+                <label for="player-name" class="block text-left font-bold text-slate-700 mb-2 text-base sm:text-lg">
+                    Siapa namamu?
+                </label>
+                <input type="text" id="player-name" placeholder="Ketik namamu di sini..." maxlength="20"
+                    class="w-full px-5 py-3.5 text-lg sm:text-xl font-bold rounded-2xl border-4 border-amber-300 focus:border-amber-500 focus:outline-none bg-amber-50/50 text-center text-slate-800">
+            </div>
+
+            <button onclick="startGame()" class="btn-3d bg-emerald-500 hover:bg-emerald-600 text-white font-judul text-xl sm:text-2xl font-bold px-8 sm:px-12 py-4 rounded-2xl border-b-4 border-emerald-700 cursor-pointer">
+                Mulai Bermain 🚀
+            </button>
+        </section>
+
+        <!-- LAYAR 2: BABAK 1 (SUSUN & COCOKKAN TRI MANDALA) -->
+        <section id="screen-stage1" class="hidden w-full bg-white rounded-3xl p-5 sm:p-8 shadow-xl border-4 border-amber-400">
+            <div class="text-center mb-6">
+                <span class="bg-blue-100 text-blue-800 font-bold px-4 py-1 rounded-full text-sm sm:text-base">
+                    Babak 1 dari 2 • Tap-to-Match
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-800 mt-2">
+                    Susun & Cocokkan Tri Mandala Pura
+                </h2>
+                <p class="text-base sm:text-lg text-slate-600 mt-1">
+                    Ketuk <b>urutan bagian Pura</b> di sebelah kiri, lalu ketuk <b>fungsi yang tepat</b> di sebelah kanan!
+                </p>
+            </div>
+
+            <!-- Grid Kartu Pencocokan -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                <!-- Kolom Kiri: Nama Bagian (Berurutan dari luar ke dalam) -->
+                <div class="space-y-3">
+                    <h3 class="font-bold text-center text-amber-800 bg-amber-100 py-2 rounded-xl text-base sm:text-lg">
+                        1️⃣ Pilih Bagian Pura (Luar → Dalam)
+                    </h3>
+                    <div id="left-cards" class="space-y-3">
+                        <!-- Diisi oleh JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Kolom Kanan: Penjelasan Fungsi (Diacak) -->
+                <div class="space-y-3">
+                    <h3 class="font-bold text-center text-indigo-800 bg-indigo-100 py-2 rounded-xl text-base sm:text-lg">
+                        2️⃣ Pilih Penjelasan Fungsinya
+                    </h3>
+                    <div id="right-cards" class="space-y-3">
+                        <!-- Diisi oleh JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- LAYAR 3: BABAK 2 (TEBAK NAMA PURA) -->
+        <section id="screen-stage2" class="hidden w-full bg-white rounded-3xl p-5 sm:p-8 shadow-xl border-4 border-amber-400">
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                <span class="bg-purple-100 text-purple-800 font-bold px-4 py-1 rounded-full text-sm sm:text-base">
+                    Babak 2 dari 2 • Tebak Jenis Pura
+                </span>
+                <span id="question-progress" class="font-bold text-slate-600 text-base sm:text-lg">
+                    Soal 1 / 5
+                </span>
+            </div>
+
+            <!-- Kotak Studi Kasus / Pertanyaan -->
+            <div class="bg-amber-50 border-4 border-amber-300 rounded-3xl p-5 sm:p-7 mb-6 text-center">
+                <div id="q-icon" class="text-5xl sm:text-6xl mb-3">🏪</div>
+                <p id="q-text" class="text-xl sm:text-2xl font-extrabold text-slate-800 leading-relaxed">
+                    Memuat pertanyaan...
+                </p>
+            </div>
+
+            <!-- Pilihan Kartu Jawaban -->
+            <div id="options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                <!-- Diisi oleh JavaScript -->
+            </div>
+        </section>
+
+        <!-- LAYAR 4: HASIL AKHIR -->
+        <section id="screen-end" class="hidden w-full bg-white rounded-3xl p-6 sm:p-10 shadow-xl border-4 border-amber-400 text-center">
+            <div id="end-emoji" class="text-6xl sm:text-7xl mb-3">🏆</div>
+            <h2 id="end-title" class="text-3xl sm:text-4xl font-bold text-amber-700 mb-2">
+                Luar Biasa!
+            </h2>
+            <p id="end-subtitle" class="text-lg sm:text-xl text-slate-600 mb-6">
+                Kamu telah menyelesaikan petualangan mengenal Pura.
+            </p>
+
+            <!-- Bintang Pencapaian -->
+            <div id="stars-display" class="text-4xl sm:text-5xl mb-6 tracking-widest">
+                ⭐⭐⭐
+            </div>
+
+            <!-- Ringkasan Skor -->
+            <div class="bg-amber-50 border-4 border-amber-300 rounded-3xl p-5 max-w-md mx-auto mb-8">
+                <p class="text-slate-600 font-bold text-base sm:text-lg">Skor Akhir Kamu:</p>
+                <p id="final-score" class="font-judul text-5xl sm:text-6xl font-bold text-amber-600 my-1">100</p>
+                <p id="final-player" class="font-bold text-slate-700 text-lg mt-2">Siswa Hebat</p>
+            </div>
+
+            <button onclick="resetGame()" class="btn-3d bg-blue-500 hover:bg-blue-600 text-white font-judul text-xl sm:text-2xl font-bold px-8 py-4 rounded-2xl border-b-4 border-blue-700 cursor-pointer">
+                Main Lagi 🔄
+            </button>
+        </section>
+
+    </main>
+
+    <!-- MODAL PESAN EDUKATIF (Pengganti alert) -->
+    <div id="feedback-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 border-4 shadow-2xl text-center transform transition-all" id="modal-box">
+            <div id="modal-icon" class="text-5xl sm:text-6xl mb-3">🌟</div>
+            <h3 id="modal-title" class="font-judul text-2xl sm:text-3xl font-bold mb-2">Hebat Sekali!</h3>
+            <p id="modal-message" class="text-base sm:text-lg text-slate-700 leading-relaxed mb-6">
+                Penjelasan edukatif akan muncul di sini.
+            </p>
+            <button id="modal-btn" onclick="closeModal()" class="btn-3d w-full bg-emerald-500 hover:bg-emerald-600 text-white font-judul text-xl font-bold py-3.5 rounded-2xl border-b-4 border-emerald-700 cursor-pointer">
+                Lanjutkan 👍
+            </button>
+        </div>
+    </div>
+
+    <footer class="mt-4 text-center text-amber-900/70 text-xs sm:text-sm font-bold">
+        Media Pembelajaran Interaktif Pendidikan Agama Hindu • Fase B Kelas 4
+    </footer>
+
+    <script>
+        // ==========================================
+        // DATA MATERI AGAMA HINDU KELAS 4 (FASE B)
+        // ==========================================
+
+        // Data Babak 1: Tri Mandala (Urutan dari luar ke dalam)
+        const triMandalaData = [
+            {
+                id: 'nista',
+                urutan: 'Urutan ke-1 (Paling Luar)',
+                nama: 'Nista Mandala (Jaba Pisan)',
+                ikon: '🌳',
+                fungsi: 'Halaman paling luar Pura. Tempat parkir, mempersiapkan sarana upacara, atau beristirahat.',
+                edukasi: 'Benar! Nista Mandala (Jaba Pisan) adalah halaman paling luar yang dibatasi oleh Candi Bentar.'
+            },
+            {
+                id: 'madya',
+                urutan: 'Urutan ke-2 (Bagian Tengah)',
+                nama: 'Madya Mandala (Jaba Tengah)',
+                ikon: '🥁',
+                fungsi: 'Halaman tengah Pura. Tempat menaruh gamelan (bale gong), balai kulkul, dan dapur suci.',
+                edukasi: 'Tepat sekali! Madya Mandala adalah area peralihan di bagian tengah sebelum masuk ke area utama.'
+            },
+            {
+                id: 'utama',
+                urutan: 'Urutan ke-3 (Paling Dalam & Suci)',
+                nama: 'Utama Mandala (Jeroan)',
+                ikon: '🛕',
+                fungsi: 'Halaman paling dalam dan paling suci. Tempat bangunan suci (Pelinggih) dan umat bersembahyang.',
+                edukasi: 'Luar biasa! Utama Mandala (Jeroan) dibatasi oleh Kori Agung dan merupakan tempat paling suci untuk memuja Ida Sang Hyang Widhi Wasa.'
+            }
+        ];
+
+        // Data Babak 2: Tebak Nama Pura berdasarkan fungsi/studi kasus
+        const tebakPuraData = [
+            {
+                ikon: '🏪',
+                pertanyaan: 'Bu Made berjualan buah di pasar. Sebelum berjualan, ia bersembahyang di pura yang ada di area pasar agar dagangannya lancar. Pura apakah itu?',
+                jawabanBenar: 'Pura Melanting',
+                pilihan: ['Pura Melanting', 'Pura Subak', 'Pura Dalem', 'Pura Segara'],
+                edukasi: 'Pura Melanting adalah Pura Swagina (profesi) tempat memuja Ida Bhatara Melanting yang dipuja oleh para pedagang di pasar.'
+            },
+            {
+                ikon: '🌾',
+                pertanyaan: 'Pak Wayan dan para petani di sawah bekerja sama mengatur air irigasi. Mereka memuja Dewi Sri di pura yang terletak di area persawahan. Pura apakah itu?',
+                jawabanBenar: 'Pura Subak',
+                pilihan: ['Pura Melanting', 'Pura Subak', 'Pura Puseh', 'Pura Kawitan'],
+                edukasi: 'Pura Subak (atau Pura Ulun Suwi) adalah pura yang dipuja oleh para petani untuk memohon kesuburan tanaman padi dan kelancaran air irigasi.'
+            },
+            {
+                ikon: '🌱',
+                pertanyaan: 'Dalam Kahyangan Tiga di desa adat, pura yang berfungsi untuk memuja Dewa Wisnu sebagai pemelihara alam semesta adalah...',
+                jawabanBenar: 'Pura Puseh',
+                pilihan: ['Pura Puseh', 'Pura Desa', 'Pura Dalem', 'Pura Besakih'],
+                edukasi: 'Pura Puseh adalah bagian dari Kahyangan Tiga tempat memuja Dewa Wisnu sebagai Sang Pemelihara kehidupan.'
+            },
+            {
+                ikon: '🕊️',
+                pertanyaan: 'Pura yang termasuk Kahyangan Tiga dan berfungsi untuk memuja Dewa Siwa sebagai pelebur serta berkaitan dengan upacara Ngaben adalah...',
+                jawabanBenar: 'Pura Dalem',
+                pilihan: ['Pura Dalem', 'Pura Puseh', 'Pura Melanting', 'Pura Ulun Danu'],
+                edukasi: 'Pura Dalem adalah bagian dari Kahyangan Tiga tempat memuja Dewa Siwa dan Dewi Durga sebagai pelebur.'
+            },
+            {
+                ikon: '⛰️',
+                pertanyaan: 'Pura terbesar dan tertua di Bali yang terletak di lereng Gunung Agung dan menjadi pusat persembahyangan umat Hindu Nusantara adalah...',
+                jawabanBenar: 'Pura Besakih',
+                pilihan: ['Pura Besakih', 'Pura Tanah Lot', 'Pura Subak', 'Pura Melanting'],
+                edukasi: 'Pura Agung Besakih adalah Pura Kahyangan Jagat terbesar yang terletak di kaki Gunung Agung, Karangasem, Bali.'
+            }
+        ];
+
+        // ==========================================
+        // VARIABEL STATE PERMAINAN
+        // ==========================================
+        let playerName = 'Siswa Hebat';
+        let score = 0;
+        let lives = 3;
+        let selectedLeftId = null;
+        let matchedCount = 0;
+        let currentQuestionIndex = 0;
+        let modalCallback = null;
+        let audioInitialized = false;
+
+        // ==========================================
+        // EFEK SUARA (WEB AUDIO / TONE.JS)
+        // ==========================================
+        function playSound(type) {
+            try {
+                if (typeof Tone === 'undefined') return;
+                if (!audioInitialized) {
+                    Tone.start();
+                    audioInitialized = true;
+                }
+                const synth = new Tone.Synth().toDestination();
+                const now = Tone.now();
+
+                if (type === 'click') {
+                    synth.triggerAttackRelease('C5', '16n', now);
+                } else if (type === 'correct') {
+                    synth.triggerAttackRelease('C5', '16n', now);
+                    synth.triggerAttackRelease('E5', '16n', now + 0.1);
+                    synth.triggerAttackRelease('G5', '8n', now + 0.2);
+                } else if (type === 'wrong') {
+                    synth.triggerAttackRelease('E3', '8n', now);
+                    synth.triggerAttackRelease('C3', '4n', now + 0.15);
+                } else if (type === 'win') {
+                    synth.triggerAttackRelease('C5', '16n', now);
+                    synth.triggerAttackRelease('E5', '16n', now + 0.1);
+                    synth.triggerAttackRelease('G5', '16n', now + 0.2);
+                    synth.triggerAttackRelease('C6', '4n', now + 0.3);
+                }
+            } catch (e) {
+                console.warn('Audio tidak dapat diputar:', e);
+            }
+        }
+
+        // ==========================================
+        // FUNGSI NAVIGASI & UI
+        // ==========================================
+        function showScreen(screenId) {
+            const screens = ['screen-start', 'screen-stage1', 'screen-stage2', 'screen-end'];
+            screens.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
+
+            const header = document.getElementById('game-header');
+            if (screenId === 'screen-start' || screenId === 'screen-end') {
+                header.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
+            }
+        }
+
+        function updateHeader() {
+            document.getElementById('player-display').textContent = playerName;
+            document.getElementById('score-display').textContent = score;
+            
+            let heartsHTML = '';
+            for (let i = 0; i < 3; i++) {
+                heartsHTML += i < lives ? '❤️' : '🤍';
+            }
+            document.getElementById('hearts-container').textContent = heartsHTML;
+        }
+
+        function showModal(isSuccess, title, message, btnText, callback) {
+            const modal = document.getElementById('feedback-modal');
+            const box = document.getElementById('modal-box');
+            const icon = document.getElementById('modal-icon');
+            const titleEl = document.getElementById('modal-title');
+            const msgEl = document.getElementById('modal-message');
+            const btn = document.getElementById('modal-btn');
+
+            if (isSuccess) {
+                box.className = 'bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 border-4 border-emerald-400 shadow-2xl text-center';
+                icon.textContent = '🌟';
+                titleEl.className = 'font-judul text-2xl sm:text-3xl font-bold mb-2 text-emerald-700';
+                btn.className = 'btn-3d w-full bg-emerald-500 hover:bg-emerald-600 text-white font-judul text-xl font-bold py-3.5 rounded-2xl border-b-4 border-emerald-700 cursor-pointer';
+            } else {
+                box.className = 'bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 border-4 border-rose-400 shadow-2xl text-center';
+                icon.textContent = '💡';
+                titleEl.className = 'font-judul text-2xl sm:text-3xl font-bold mb-2 text-rose-600';
+                btn.className = 'btn-3d w-full bg-amber-500 hover:bg-amber-600 text-white font-judul text-xl font-bold py-3.5 rounded-2xl border-b-4 border-amber-700 cursor-pointer';
+            }
+
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+            btn.textContent = btnText;
+            modalCallback = callback;
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            playSound('click');
+            document.getElementById('feedback-modal').classList.add('hidden');
+            if (typeof modalCallback === 'function') {
+                const cb = modalCallback;
+                modalCallback = null;
+                cb();
+            }
+        }
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // ==========================================
+        // LOGIKA MEMULAI PERMAINAN
+        // ==========================================
+        function startGame() {
+            const inputName = document.getElementById('player-name').value.trim();
+            playerName = inputName !== '' ? inputName : 'Siswa Hebat';
+            
+            score = 0;
+            lives = 3;
+            selectedLeftId = null;
+            matchedCount = 0;
+            currentQuestionIndex = 0;
+
+            playSound('click');
+            updateHeader();
+            initStage1();
+        }
+
+        // ==========================================
+        // LOGIKA BABAK 1: SUSUN & COCOKKAN TRI MANDALA
+        // ==========================================
+        function initStage1() {
+            document.getElementById('header-stage').textContent = 'Babak 1: Tri Mandala';
+            showScreen('screen-stage1');
+
+            const leftContainer = document.getElementById('left-cards');
+            const rightContainer = document.getElementById('right-cards');
+            leftContainer.innerHTML = '';
+            rightContainer.innerHTML = '';
+
+            // Render Kolom Kiri (Urutan tetap dari luar ke dalam agar siswa belajar konsep urutan)
+            triMandalaData.forEach(item => {
+                const card = document.createElement('button');
+                card.id = `left-${item.id}`;
+                card.className = 'w-full text-left p-4 rounded-2xl border-4 border-amber-300 bg-amber-50 hover:bg-amber-100 transition-all cursor-pointer flex items-center gap-3';
+                card.innerHTML = `
+                    <span class="text-3xl sm:text-4xl">${item.ikon}</span>
+                    <div>
+                        <span class="inline-block text-xs font-extrabold uppercase tracking-wide bg-amber-200 text-amber-900 px-2.5 py-0.5 rounded-lg mb-1">
+                            ${item.urutan}
+                        </span>
+                        <p class="font-judul text-lg sm:text-xl font-bold text-slate-800">${item.nama}</p>
+                    </div>
+                `;
+                card.onclick = () => selectLeftCard(item.id);
+                leftContainer.appendChild(card);
+            });
+
+            // Render Kolom Kanan (Diacak posisinya)
+            const shuffledRight = shuffleArray(triMandalaData);
+            shuffledRight.forEach(item => {
+                const card = document.createElement('button');
+                card.id = `right-${item.id}`;
+                card.className = 'w-full text-left p-4 rounded-2xl border-4 border-indigo-200 bg-indigo-50/70 hover:bg-indigo-100 transition-all cursor-pointer';
+                card.innerHTML = `
+                    <p class="text-base sm:text-lg font-bold text-slate-700 leading-snug">${item.fungsi}</p>
+                `;
+                card.onclick = () => selectRightCard(item.id);
+                rightContainer.appendChild(card);
+            });
+        }
+
+        function selectLeftCard(id) {
+            playSound('click');
+            // Hapus seleksi sebelumnya
+            triMandalaData.forEach(item => {
+                const el = document.getElementById(`left-${item.id}`);
+                if (el && !el.classList.contains('card-matched')) {
+                    el.classList.remove('card-selected');
+                }
+            });
+
+            selectedLeftId = id;
+            document.getElementById(`left-${id}`).classList.add('card-selected');
+        }
+
+        function selectRightCard(rightId) {
+            if (!selectedLeftId) {
+                // Jika siswa belum memilih kartu kiri
+                const rightEl = document.getElementById(`right-${rightId}`);
+                rightEl.classList.add('animate-shake');
+                setTimeout(() => rightEl.classList.remove('animate-shake'), 400);
+                showModal(false, 'Pilih Bagian Pura Dulu!', 'Ketuk salah satu kotak Bagian Pura di sebelah kiri (kolom 1) terlebih dahulu, lalu ketuk penjelasannya.', 'Mengerti', null);
+                return;
+            }
+
+            if (selectedLeftId === rightId) {
+                // Jawaban Cocok / Benar!
+                playSound('correct');
+                const leftEl = document.getElementById(`left-${selectedLeftId}`);
+                const rightEl = document.getElementById(`right-${rightId}`);
+
+                leftEl.classList.remove('card-selected');
+                leftEl.classList.add('card-matched');
+                rightEl.classList.add('card-matched');
+
+                score += 15;
+                matchedCount++;
+                updateHeader();
+
+                const matchedData = triMandalaData.find(d => d.id === rightId);
+                selectedLeftId = null;
+
+                if (matchedCount === triMandalaData.length) {
+                    showModal(true, 'Babak 1 Selesai! 🎉', `${matchedData.edukasi}\n\nKamu berhasil menyusun ketiga bagian Tri Mandala dengan sempurna!`, 'Lanjut ke Babak 2 ➡️', () => {
+                        initStage2();
+                    });
+                } else {
+                    showModal(true, 'Cocok & Benar! (+15 Poin)', matchedData.edukasi, 'Lanjutkan 👍', null);
+                }
+            } else {
+                // Jawaban Salah
+                playSound('wrong');
+                lives--;
+                updateHeader();
+
+                const rightEl = document.getElementById(`right-${rightId}`);
+                rightEl.classList.add('animate-shake', 'border-rose-500', 'bg-rose-100');
+                setTimeout(() => {
+                    rightEl.classList.remove('animate-shake', 'border-rose-500', 'bg-rose-100');
+                }, 500);
+
+                if (lives <= 0) {
+                    showModal(false, 'Yah, Nyawa Habis! 😢', 'Jangan menyerah! Ayo pelajari lagi bagian-bagian Pura dan coba bermain kembali.', 'Lihat Hasil', () => {
+                        endGame(false);
+                    });
+                } else {
+                    showModal(false, 'Kurang Tepat! (-1 ❤️)', 'Coba baca kembali ciri-ciri bagian Pura yang kamu pilih dan cari fungsi yang paling sesuai.', 'Coba Lagi', null);
+                }
+            }
+        }
+
+        // ==========================================
+        // LOGIKA BABAK 2: TEBAK NAMA PURA
+        // ==========================================
+        function initStage2() {
+            document.getElementById('header-stage').textContent = 'Babak 2: Jenis Pura';
+            currentQuestionIndex = 0;
+            showScreen('screen-stage2');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = tebakPuraData[currentQuestionIndex];
+            document.getElementById('question-progress').textContent = `Soal ${currentQuestionIndex + 1} / ${tebakPuraData.length}`;
+            document.getElementById('q-icon').textContent = q.ikon;
+            document.getElementById('q-text').textContent = q.pertanyaan;
+
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = '';
+
+            // Acak urutan pilihan jawaban
+            const shuffledOptions = shuffleArray(q.pilihan);
+
+            shuffledOptions.forEach(optionText => {
+                const btn = document.createElement('button');
+                btn.className = 'btn-3d bg-white hover:bg-amber-50 border-4 border-amber-300 text-slate-800 font-judul text-xl sm:text-2xl font-bold py-4 px-5 rounded-2xl cursor-pointer text-center';
+                btn.textContent = optionText;
+                btn.onclick = () => checkAnswerStage2(optionText, btn);
+                optionsGrid.appendChild(btn);
+            });
+        }
+
+        function checkAnswerStage2(selectedOption, btnElement) {
+            const q = tebakPuraData[currentQuestionIndex];
+
+            if (selectedOption === q.jawabanBenar) {
+                playSound('correct');
+                btnElement.classList.remove('border-amber-300', 'bg-white');
+                btnElement.classList.add('border-emerald-500', 'bg-emerald-100', 'text-emerald-900');
+
+                score += 11; // Total maksimal Babak 1 (45) + Babak 2 (55) = 100 Poin!
+                updateHeader();
+
+                const isLastQuestion = currentQuestionIndex === tebakPuraData.length - 1;
+                showModal(
+                    true,
+                    'Jawaban Benar! (+11 Poin)',
+                    q.edukasi,
+                    isLastQuestion ? 'Lihat Skor Akhir 🏆' : 'Soal Berikutnya ➡️',
+                    () => {
+                        if (isLastQuestion) {
+                            endGame(true);
+                        } else {
+                            currentQuestionIndex++;
+                            renderQuestion();
+                        }
+                    }
+                );
+            } else {
+                playSound('wrong');
+                lives--;
+                updateHeader();
+
+                btnElement.classList.add('animate-shake', 'border-rose-500', 'bg-rose-100');
+                setTimeout(() => {
+                    btnElement.classList.remove('animate-shake', 'border-rose-500', 'bg-rose-100');
+                }, 500);
+
+                if (lives <= 0) {
+                    showModal(false, 'Yah, Nyawa Habis! 😢', `Jawaban yang tepat adalah ${q.jawabanBenar}. ${q.edukasi}`, 'Lihat Hasil', () => {
+                        endGame(false);
+                    });
+                } else {
+                    showModal(false, 'Belum Tepat! (-1 ❤️)', 'Baca kembali kata kunci pada cerita di atas dengan teliti ya!', 'Coba Pilih Lagi', null);
+                }
+            }
+        }
+
+        // ==========================================
+        // LAYAR AKHIR & ULANG PERMAINAN
+        // ==========================================
+        function endGame(isCompleted) {
+            showScreen('screen-end');
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-player').textContent = playerName;
+
+            if (isCompleted && lives === 3) {
+                playSound('win');
+                document.getElementById('end-emoji').textContent = '🏆';
+                document.getElementById('end-title').textContent = 'Sempurna! Anak Hebat!';
+                document.getElementById('end-subtitle').textContent = 'Kamu menguasai materi Bagian dan Jenis Pura tanpa kesalahan sedikit pun!';
+                document.getElementById('stars-display').textContent = '⭐⭐⭐';
+            } else if (isCompleted) {
+                playSound('win');
+                document.getElementById('end-emoji').textContent = '🎉';
+                document.getElementById('end-title').textContent = 'Hebat Sekali!';
+                document.getElementById('end-subtitle').textContent = 'Kamu berhasil menyelesaikan semua babak permainan dengan baik.';
+                document.getElementById('stars-display').textContent = lives === 2 ? '⭐⭐⭐' : '⭐⭐';
+            } else {
+                document.getElementById('end-emoji').textContent = '💪';
+                document.getElementById('end-title').textContent = 'Tetap Semangat Belajar!';
+                document.getElementById('end-subtitle').textContent = 'Ayo coba lagi supaya kamu semakin hafal bagian dan jenis-jenis Pura.';
+                document.getElementById('stars-display').textContent = '⭐';
+            }
+        }
+
+        function resetGame() {
+            playSound('click');
+            showScreen('screen-start');
+        }
+    </script>
+</body>
+</html>
